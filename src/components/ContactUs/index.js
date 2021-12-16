@@ -1,5 +1,7 @@
 import { useState } from "react";
 import isEmail from "validator/lib/isEmail";
+import isLength from "validator/lib/isLength"
+import isMobilePhone from "validator/lib/isMobilePhone"
 
 const ContactUs = () => {
     const [name, setName] = useState('');
@@ -14,12 +16,19 @@ const ContactUs = () => {
     const validate = () => {
         const validationErrors = [];
 
-        if (!name) validationErrors.push('Please provide a Name')
+        if (!name) validationErrors.push('Please provide a name')
         if (!email) {
-            validationErrors.push('Please provide an Email');
+            validationErrors.push('Please provide an email');
         } else if (!isEmail(email)) {
-            validationErrors.push('Please provide a valid Email');
+            validationErrors.push('Please provide a valid email');
         }
+        if (!phone) {
+            validationErrors.push('Please provide a phone number')
+        } else if (!isMobilePhone(phone, 'en-CA')) {
+            validationErrors.push('Please provide a valid phone number')
+        }
+        if (!isLength(bio, { min: 0, max: 280 })) validationErrors.push('Bio must be 280 characters or less')
+        if (phone && phoneType === '') validationErrors.push('Please provide a phone type')
 
         return validationErrors;
     }
@@ -89,11 +98,13 @@ const ContactUs = () => {
                     type='text' 
                     onChange={(e) => setPhone(e.target.value)}
                     value={phone}
+                    placeholder='(___)-___ ____'
                 />
                 <select
                     name='phonetype'
                     onChange={e => setPhoneType(e.target.value)}
                     value={phoneType}
+                    disabled={phone === ''}
                 >
                     <option value='' disabled>Select a phone type...</option>
                     <option>Home</option>
